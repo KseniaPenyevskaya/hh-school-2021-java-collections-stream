@@ -4,9 +4,10 @@ import common.Person;
 import common.PersonService;
 import common.Task;
 
-import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /*
@@ -19,9 +20,22 @@ import java.util.stream.Collectors;
 public class Task1 implements Task {
 
   // !!! Редактируйте этот метод !!!
+  /* Асимптотика O(n):
+      -- за O(n) проходим List personIds для построения мапы {id : Person}
+      -- снова за O(n) проходим List personIds и за O(1) по хэшу получаем персону из мапы
+   */
   private List<Person> findOrderedPersons(List<Integer> personIds) {
     Set<Person> persons = PersonService.findPersons(personIds);
-    return Collections.emptyList();
+
+    Map<Integer, Person> idPersonMap = persons.stream()
+            .collect(Collectors.toMap(
+                    person -> person.getId(),
+                    Function.identity()
+            ));
+
+    return personIds.stream()
+            .map(id -> idPersonMap.get(id))
+            .toList();
   }
 
   @Override
