@@ -18,7 +18,7 @@ P.P.S Здесь ваши правки желательно прокоммент
  */
 public class Task8 implements Task {
 
-  private long count;
+
 
   //Не хотим выдывать апи нашу фальшивую персону, поэтому конвертим начиная со второй
   /*
@@ -41,7 +41,7 @@ public class Task8 implements Task {
    */
   public Set<String> getDifferentNames(List<Person> persons) {
     
-    return new HashSet<String>(getNames(persons));
+    return new HashSet<>(getNames(persons));
   }
 
   //Для фронтов выдадим полное имя, а то сами не могут
@@ -65,29 +65,35 @@ public class Task8 implements Task {
     return persons.stream()
             .collect(Collectors.toMap(
                     Person::getId,
-                    person -> convertPersonToString(person)
+                    person -> convertPersonToString(person),
+                    (addedValue, currentValue) -> addedValue
             ));
   }
 
   // есть ли совпадающие в двух коллекциях персоны?
-  /*
-  https://stackoverflow.com/questions/8708542/something-like-contains-any-for-java-set
-   */
   public boolean hasSamePersons(Collection<Person> persons1, Collection<Person> persons2) {
-    return !Collections.disjoint(persons1, persons2);
+    Set<Person> persons1Set = new HashSet<>(persons1);
+    return persons2.stream()
+            .anyMatch(person -> persons1Set.contains(person));
   }
 
 
   public long countEven(Stream<Integer> numbers) {
-
-    return numbers.filter(num -> num % 2 == 0).count();
+    return numbers.parallel().filter(num -> num % 2 == 0).count();
   }
+
 
   @Override
   public boolean check() {
     System.out.println("Слабо дойти до сюда и исправить Fail этой таски?");
     boolean codeSmellsGood = true;
     boolean reviewerDrunk = false;
-    return codeSmellsGood || reviewerDrunk;
+    boolean canProcessParallelStream;
+    List<Integer> testList = new ArrayList<>();
+    for (int i = 1; i<1000000; i++){
+      testList.add(i);
+    }
+    canProcessParallelStream = countEven(testList.stream().parallel()) == countEven(testList.stream());
+    return (codeSmellsGood || reviewerDrunk) & canProcessParallelStream;
   }
 }

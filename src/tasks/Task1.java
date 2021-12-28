@@ -34,7 +34,7 @@ public class Task1 implements Task {
             ));
 
     return personIds.stream()
-            .map(id -> idPersonMap.get(id))
+            .map(idPersonMap::get)
             .toList();
   }
 
